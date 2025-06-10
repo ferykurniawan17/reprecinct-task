@@ -1,0 +1,4 @@
+node_modules/
+packages/backend-service/dist/
+packages/backend-service/node_modules/
+packages/frontend/node_modules/

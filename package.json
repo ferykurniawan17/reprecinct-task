@@ -1,0 +1,21 @@
+{
+  "name": "your-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "lerna": "^7.4.2",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.30",
+    "eslint": "^9.28.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "dev": "lerna run dev",
+    "build": "lerna run build",
+    "test": "lerna run test"
+  },
+  "packageManager": "yarn@1.22.22"
+}
