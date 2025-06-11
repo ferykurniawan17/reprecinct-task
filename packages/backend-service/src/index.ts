@@ -14,10 +14,10 @@ app.use(cors());
 app.use(express.json());
 
 // POST: /attribute
-app.post("/attribute", (req, res) => createAttributesApiHandler(req, res));
+app.post("/api/attribute", (req, res) => createAttributesApiHandler(req, res));
 
 // GET: /attribute
-app.get("/attribute", (req, res) => filterAttributesApiHandler(req, res));
+app.get("/api/attribute", (req, res) => filterAttributesApiHandler(req, res));
 
 // parse port to number
 const port = parseInt(process.env.PORT ?? "4000", 10);

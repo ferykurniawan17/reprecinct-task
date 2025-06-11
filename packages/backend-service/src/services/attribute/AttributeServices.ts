@@ -3,6 +3,7 @@ import {
   Attribute,
   AttributeQueryOptions,
   AttributeResult,
+  AttributesListResponse,
 } from "../../interfaces/attribute/type";
 import {
   createAttribute,
@@ -45,27 +46,30 @@ export async function createAttributes(
  */
 export async function getAttributes(
   options: AttributeQueryOptions
-): Promise<Attribute[]> {
+): Promise<AttributesListResponse> {
   const { search, limit } = options;
 
-  // 1) if search param is provided, ignore limit and return filtered list
   if (search) {
-    return findAttributesBySearch(search);
+    const records = findAttributesBySearch(search);
+
+    const data = await records;
+    return { data, total: data.length };
   }
 
-  // 2) otherwise fetch all, then optionally slice random sample
   const all = await findAllAttributes();
 
   if (!!limit) {
-    // shuffle in-place (Fisher–Yates)
     for (let i = all.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [all[i], all[j]] = [all[j], all[i]];
     }
 
-    return all.slice(0, limit);
+    // return only `limit` items
+    const data = all.slice(0, limit);
+    return { data, total: all.length };
   }
 
-  // 3) no filters: return everything
-  return all;
+  // return all items
+  const data = all;
+  return { data, total: data.length };
 }

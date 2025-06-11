@@ -22,3 +22,8 @@ export type CreateAttributeResponse = {
   created: string[];
   skipped: string[];
 };
+
+export interface AttributesListResponse {
+  data: Attribute[];
+  total: number;
+}
