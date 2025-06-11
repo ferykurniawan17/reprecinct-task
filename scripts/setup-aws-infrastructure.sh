@@ -19,31 +19,88 @@ DB_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
 # 1. Create RDS PostgreSQL Database
 echo "📊 Creating RDS PostgreSQL database..."
 
-# Create DB subnet group
+# Get default VPC and subnets
+echo "🔍 Finding default VPC and subnets..."
+DEFAULT_VPC=$(aws ec2 describe-vpcs \
+    --filters "Name=is-default,Values=true" \
+    --query 'Vpcs[0].VpcId' \
+    --output text \
+    --region $REGION)
+
+if [ "$DEFAULT_VPC" = "None" ] || [ -z "$DEFAULT_VPC" ]; then
+    echo "❌ No default VPC found. Please create a VPC first."
+    exit 1
+fi
+
+echo "✅ Using VPC: $DEFAULT_VPC"
+
+# Get subnets in different AZs
+SUBNETS=$(aws ec2 describe-subnets \
+    --filters "Name=vpc-id,Values=$DEFAULT_VPC" \
+    --query 'Subnets[*].SubnetId' \
+    --output text \
+    --region $REGION)
+
+if [ -z "$SUBNETS" ]; then
+    echo "❌ No subnets found in VPC. Please create subnets first."
+    exit 1
+fi
+
+# Convert to array for easier handling
+SUBNET_ARRAY=($SUBNETS)
+echo "✅ Found ${#SUBNET_ARRAY[@]} subnets"
+
+# Create DB subnet group (needs at least 2 subnets in different AZs)
+if [ ${#SUBNET_ARRAY[@]} -lt 2 ]; then
+    echo "❌ Need at least 2 subnets in different AZs for RDS"
+    exit 1
+fi
+
 aws rds create-db-subnet-group \
     --db-subnet-group-name "${APP_NAME}-db-subnet-group" \
     --db-subnet-group-description "Subnet group for ${APP_NAME} database" \
-    --subnet-ids subnet-12345678 subnet-87654321 \
-    --region $REGION || echo "DB subnet group may already exist"
+    --subnet-ids ${SUBNET_ARRAY[0]} ${SUBNET_ARRAY[1]} \
+    --region $REGION 2>/dev/null || echo "DB subnet group may already exist"
 
 # Create security group for RDS
+echo "🔒 Creating security group for RDS..."
 RDS_SECURITY_GROUP_ID=$(aws ec2 create-security-group \
     --group-name "${APP_NAME}-rds-sg" \
     --description "Security group for ${APP_NAME} RDS instance" \
-    --vpc-id vpc-12345678 \
+    --vpc-id $DEFAULT_VPC \
     --region $REGION \
     --query 'GroupId' \
-    --output text 2>/dev/null || echo "Security group may already exist")
+    --output text 2>/dev/null)
 
-# Add inbound rule for PostgreSQL
+if [ -z "$RDS_SECURITY_GROUP_ID" ]; then
+    # Security group might already exist, get its ID
+    RDS_SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \
+        --filters "Name=group-name,Values=${APP_NAME}-rds-sg" "Name=vpc-id,Values=$DEFAULT_VPC" \
+        --query 'SecurityGroups[0].GroupId' \
+        --output text \
+        --region $REGION)
+fi
+
+echo "✅ Security Group ID: $RDS_SECURITY_GROUP_ID"
+
+# Add inbound rule for PostgreSQL (allow from anywhere in VPC)
 aws ec2 authorize-security-group-ingress \
     --group-id $RDS_SECURITY_GROUP_ID \
     --protocol tcp \
     --port 5432 \
-    --cidr 10.0.0.0/16 \
-    --region $REGION || echo "Security group rule may already exist"
+    --source-group $RDS_SECURITY_GROUP_ID \
+    --region $REGION 2>/dev/null || echo "Security group rule may already exist"
+
+# Also allow from common CIDR blocks (adjust as needed)
+aws ec2 authorize-security-group-ingress \
+    --group-id $RDS_SECURITY_GROUP_ID \
+    --protocol tcp \
+    --port 5432 \
+    --cidr 10.0.0.0/8 \
+    --region $REGION 2>/dev/null || echo "CIDR rule may already exist"
 
 # Create RDS instance
+echo "🚀 Creating RDS PostgreSQL instance..."
 aws rds create-db-instance \
     --db-instance-identifier "${APP_NAME}-db" \
     --db-instance-class db.t3.micro \
@@ -52,12 +109,17 @@ aws rds create-db-instance \
     --master-username $DB_USERNAME \
     --master-user-password $DB_PASSWORD \
     --allocated-storage 20 \
+    --storage-type gp2 \
     --db-name $DB_NAME \
     --vpc-security-group-ids $RDS_SECURITY_GROUP_ID \
     --db-subnet-group-name "${APP_NAME}-db-subnet-group" \
     --backup-retention-period 7 \
     --storage-encrypted \
-    --region $REGION || echo "RDS instance may already exist"
+    --multi-az false \
+    --publicly-accessible false \
+    --auto-minor-version-upgrade true \
+    --deletion-protection false \
+    --region $REGION 2>/dev/null || echo "RDS instance may already exist"
 
 echo "⏳ Waiting for RDS instance to be available..."
 aws rds wait db-instance-available --db-instance-identifier "${APP_NAME}-db" --region $REGION
