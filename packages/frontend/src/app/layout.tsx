@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "@radix-ui/themes/styles.css";
+import { AppProviders } from "@/modules/shared/providers/AppProviders";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +28,7 @@ export default function RootLayout({
             </div>
           </header>
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
+            <AppProviders>{children}</AppProviders>
           </main>
         </div>
       </body>
