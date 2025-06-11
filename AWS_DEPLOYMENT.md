@@ -18,11 +18,13 @@ This document outlines the deployment setup for the Reprecinct application on AW
 ## Environment Variables
 
 ### Frontend (.env.production)
+
 ```bash
 NEXT_PUBLIC_API_URL=https://your-backend-domain.amplifyapp.com
 ```
 
 ### Backend (.env.production)
+
 ```bash
 DATABASE_URL=postgresql://username:password@your-rds-endpoint:5432/database?schema=public
 NODE_ENV=production
@@ -34,6 +36,7 @@ JWT_SECRET=your-super-secure-jwt-secret
 ## AWS Resources Setup
 
 ### 1. RDS PostgreSQL Database
+
 - Instance: `db.t3.micro` (can be upgraded later)
 - Engine: PostgreSQL 15.4
 - Storage: 20GB (can be expanded)
@@ -43,11 +46,13 @@ JWT_SECRET=your-super-secure-jwt-secret
 ### 2. Amplify Applications
 
 #### Frontend App
+
 - Build command: `npm run build`
 - Output directory: `.next`
 - Node version: 18
 
 #### Backend App
+
 - Build command: `npm run build`
 - Output directory: `dist`
 - Node version: 18
@@ -55,10 +60,12 @@ JWT_SECRET=your-super-secure-jwt-secret
 ### 3. Environment Variables in Amplify Console
 
 #### Frontend Environment Variables
+
 - `NEXT_PUBLIC_API_URL`: Backend API URL
 - `NODE_ENV`: production
 
 #### Backend Environment Variables
+
 - `DATABASE_URL`: RDS connection string
 - `NODE_ENV`: production
 - `PORT`: 4000
@@ -70,11 +77,13 @@ JWT_SECRET=your-super-secure-jwt-secret
 ### Initial Setup
 
 1. **Run AWS Infrastructure Setup**
+
    ```bash
    ./scripts/setup-aws-infrastructure.sh
    ```
 
 2. **Create Amplify Apps**
+
    - Go to AWS Amplify Console
    - Create new apps for frontend and backend
    - Connect to your GitHub repository
@@ -87,6 +96,7 @@ JWT_SECRET=your-super-secure-jwt-secret
 ### Continuous Deployment
 
 1. **GitHub Actions Setup**
+
    - Add AWS credentials to GitHub Secrets
    - Configure repository secrets:
      - `AWS_ACCESS_KEY_ID`
@@ -104,6 +114,7 @@ JWT_SECRET=your-super-secure-jwt-secret
 ## Database Management
 
 ### Running Migrations
+
 ```bash
 # For production deployment
 cd packages/backend-service
@@ -114,6 +125,7 @@ npx prisma migrate dev
 ```
 
 ### Database Connection
+
 The application uses Prisma as the ORM. Connection is configured via `DATABASE_URL` environment variable.
 
 ## Monitoring and Logging
@@ -140,11 +152,13 @@ The application uses Prisma as the ORM. Connection is configured via `DATABASE_U
 ### Common Issues
 
 1. **Build Failures**
+
    - Check build logs in Amplify Console
    - Verify environment variables
    - Check dependency versions
 
 2. **Database Connection Issues**
+
    - Verify security group rules
    - Check DATABASE_URL format
    - Ensure RDS instance is running
@@ -154,6 +168,7 @@ The application uses Prisma as the ORM. Connection is configured via `DATABASE_U
    - Check frontend and backend URLs match
 
 ### Logs Access
+
 - Amplify build logs: Amplify Console → App → Branch → Build details
 - Runtime logs: CloudWatch → Log groups
 - Database logs: RDS → Monitoring
@@ -161,10 +176,12 @@ The application uses Prisma as the ORM. Connection is configured via `DATABASE_U
 ## Scaling
 
 ### Frontend Scaling
+
 - Amplify automatically scales frontend
 - Consider CloudFront for global distribution
 
 ### Backend Scaling
+
 - For higher traffic, consider migrating to ECS Fargate
 - Implement load balancing
 - Use RDS read replicas for database scaling
@@ -172,11 +189,13 @@ The application uses Prisma as the ORM. Connection is configured via `DATABASE_U
 ## Backup and Recovery
 
 ### Database Backups
+
 - Automated daily backups (7 days retention)
 - Point-in-time recovery available
 - Manual snapshots for major deployments
 
 ### Application Backups
+
 - Source code in GitHub
 - Build artifacts in Amplify
 - Environment configurations documented

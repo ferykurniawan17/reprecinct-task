@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/backend-service/**'
-      - '.github/workflows/deploy-backend.yml'
+      - "packages/backend-service/**"
+      - ".github/workflows/deploy-backend.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'packages/backend-service/**'
+      - "packages/backend-service/**"
 
 env:
   AWS_REGION: us-east-1
@@ -29,19 +29,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'packages/backend-service/package-lock.json'
+          node-version: "18"
+          cache: "yarn"
+          cache-dependency-path: "packages/backend-service/yarn.lock"
 
       - name: Install dependencies
         run: |
           cd packages/backend-service
-          npm ci
+          yarn install --frozen-lockfile
 
       - name: Build TypeScript
         run: |
           cd packages/backend-service
-          npm run build
+          yarn build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

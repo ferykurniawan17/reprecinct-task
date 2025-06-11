@@ -3,6 +3,7 @@
 ## The Issue You Encountered
 
 The error you saw:
+
 ```
 cd: packages/frontend: No such file or directory
 ```
@@ -14,27 +15,29 @@ This happens because AWS Amplify's build environment doesn't recognize the monor
 I've fixed your `amplify-frontend.yml` configuration. The key changes:
 
 ### ❌ Before (Incorrect):
+
 ```yaml
 version: 1
 applications:
-  - appRoot: packages/frontend  # This doesn't work correctly
+  - appRoot: packages/frontend # This doesn't work correctly
     frontend:
       phases:
         preBuild:
           commands:
-            - cd packages/frontend  # Fails because path is wrong
+            - cd packages/frontend # Fails because path is wrong
 ```
 
 ### ✅ After (Correct):
+
 ```yaml
 version: 1
-frontend:  # Direct frontend configuration
+frontend: # Direct frontend configuration
   phases:
     preBuild:
       commands:
-        - ls -la                    # Debug: show current directory
-        - pwd                       # Debug: show current path
-        - cd packages/frontend      # Navigate to frontend
+        - ls -la # Debug: show current directory
+        - pwd # Debug: show current path
+        - cd packages/frontend # Navigate to frontend
         - npm install
 ```
 
@@ -45,12 +48,14 @@ Since you asked about database hosting, here's how to properly set it up:
 ### 1. **Set Up AWS RDS PostgreSQL**
 
 Run the database setup script:
+
 ```bash
 chmod +x scripts/setup-database.sh
 ./scripts/setup-database.sh
 ```
 
 This will create:
+
 - RDS PostgreSQL instance (`db.t3.micro` - free tier eligible)
 - Security groups with proper access rules
 - Subnet groups for high availability
@@ -62,10 +67,12 @@ This will create:
 In your AWS Amplify Console, set these environment variables:
 
 **Frontend App:**
+
 - `NEXT_PUBLIC_API_URL`: `https://your-backend-amplify-url.amplifyapp.com`
 - `NODE_ENV`: `production`
 
 **Backend App:**
+
 - `DATABASE_URL`: `postgresql://username:password@your-rds-endpoint:5432/database?schema=public`
 - `NODE_ENV`: `production`
 - `PORT`: `4000`
@@ -91,12 +98,14 @@ In your AWS Amplify Console, set these environment variables:
 ## Step-by-Step Deployment Process
 
 ### 1. **Prepare Your Repository**
+
 ```bash
 # Test the build locally first
 ./scripts/test-deployment.sh
 ```
 
 ### 2. **Set Up Database**
+
 ```bash
 # Create RDS PostgreSQL instance
 ./scripts/setup-database.sh
@@ -105,6 +114,7 @@ In your AWS Amplify Console, set these environment variables:
 ### 3. **Create Amplify Apps**
 
 **Frontend App:**
+
 1. Go to AWS Amplify Console
 2. Choose "Host web app"
 3. Connect your GitHub repository
@@ -114,6 +124,7 @@ In your AWS Amplify Console, set these environment variables:
 7. Save and deploy
 
 **Backend App:**
+
 1. Create second Amplify app
 2. Same repository, `main` branch
 3. Build settings: Upload `amplify-backend.yml`
@@ -123,6 +134,7 @@ In your AWS Amplify Console, set these environment variables:
 ### 4. **Run Database Migrations**
 
 After backend deployment, run migrations:
+
 ```bash
 # Option 1: Through Amplify Console (add to postBuild)
 npx prisma migrate deploy
@@ -135,21 +147,25 @@ DATABASE_URL="your-rds-connection-string" npx prisma migrate deploy
 ## Database Management Best Practices
 
 ### 1. **Environment Separation**
+
 - **Development**: Local PostgreSQL
 - **Staging**: Smaller RDS instance
 - **Production**: Full RDS instance with backups
 
 ### 2. **Monitoring**
+
 - Enable RDS Performance Insights
 - Set up CloudWatch alarms
 - Monitor connection pool usage
 
 ### 3. **Backup Strategy**
+
 - Automated daily backups (7-30 days)
 - Manual snapshots before major deployments
 - Point-in-time recovery for production
 
 ### 4. **Cost Optimization**
+
 - Start with `db.t3.micro` (free tier)
 - Scale up based on usage
 - Use reserved instances for production
@@ -157,20 +173,26 @@ DATABASE_URL="your-rds-connection-string" npx prisma migrate deploy
 ## Common Issues and Solutions
 
 ### Issue: "Database connection failed"
+
 **Solution:**
+
 1. Check security group rules
 2. Verify DATABASE_URL format
 3. Ensure RDS instance is running
 4. Test connection from same VPC
 
 ### Issue: "Amplify build fails with dependencies"
+
 **Solution:**
+
 1. Clear Amplify cache
 2. Update Node.js version in build settings
 3. Check package.json dependencies
 
 ### Issue: "CORS errors in production"
+
 **Solution:**
+
 1. Verify CORS_ORIGIN environment variable
 2. Check both frontend and backend URLs
 3. Ensure proper protocol (https)
@@ -178,14 +200,17 @@ DATABASE_URL="your-rds-connection-string" npx prisma migrate deploy
 ## Monitoring and Logs
 
 ### Amplify Logs
+
 - Build logs: Amplify Console → App → Build details
 - Runtime logs: CloudWatch → Log groups
 
 ### Database Logs
+
 - RDS Console → Monitoring tab
 - CloudWatch → RDS metrics
 
 ### Application Monitoring
+
 - CloudWatch Application Insights
 - AWS X-Ray for distributed tracing
 

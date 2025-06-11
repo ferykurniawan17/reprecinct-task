@@ -36,13 +36,13 @@ if [ ! -f ".env" ]; then
 fi
 
 print_status "Installing backend dependencies..."
-npm install
+yarn install
 
 print_status "Generating Prisma client..."
 npx prisma generate
 
 print_status "Building backend TypeScript..."
-npm run build
+yarn build
 
 print_status "Backend build successful!"
 
@@ -56,16 +56,16 @@ if [ ! -f ".env.local" ]; then
 fi
 
 print_status "Installing frontend dependencies..."
-npm install
+yarn install
 
 print_status "Running type check..."
-npm run type-check
+yarn type-check
 
 print_status "Running linter..."
-npm run lint
+yarn lint
 
 print_status "Building frontend application..."
-npm run build
+yarn build
 
 print_status "Frontend build successful!"
 

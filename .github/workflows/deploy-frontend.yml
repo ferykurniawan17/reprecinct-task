@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/frontend/**'
-      - '.github/workflows/deploy-frontend.yml'
+      - "packages/frontend/**"
+      - ".github/workflows/deploy-frontend.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'packages/frontend/**'
+      - "packages/frontend/**"
 
 jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,29 +22,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'packages/frontend/package-lock.json'
+          node-version: "18"
+          cache: "yarn"
+          cache-dependency-path: "packages/frontend/yarn.lock"
 
       - name: Install dependencies
         run: |
           cd packages/frontend
-          npm ci
+          yarn install --frozen-lockfile
 
       - name: Type check
         run: |
           cd packages/frontend
-          npm run type-check
+          yarn type-check
 
       - name: Lint
         run: |
           cd packages/frontend
-          npm run lint
+          yarn lint
 
       - name: Build application
         run: |
           cd packages/frontend
-          npm run build
+          yarn build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 

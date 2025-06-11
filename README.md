@@ -12,6 +12,7 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - AWS CLI configured
 - Node.js 18+
 - GitHub account
@@ -20,33 +21,36 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
 ### Local Development
 
 1. **Clone and install dependencies**
+
    ```bash
    git clone <your-repo>
    cd reprecinct-task
-   
+
    # Install backend dependencies
    cd packages/backend-service
    npm install
-   
+
    # Install frontend dependencies
    cd ../frontend
    npm install
    ```
 
 2. **Set up local environment**
+
    ```bash
    # Backend environment
    cd packages/backend-service
    cp .env.example .env
    # Edit .env with your local database URL
-   
-   # Frontend environment  
+
+   # Frontend environment
    cd ../frontend
    cp .env.example .env.local
    # Edit .env.local with your local API URL
    ```
 
 3. **Run database setup**
+
    ```bash
    cd packages/backend-service
    npx prisma generate
@@ -54,17 +58,19 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
    ```
 
 4. **Start development servers**
+
    ```bash
    # Terminal 1 - Backend
    cd packages/backend-service
    npm run dev
-   
+
    # Terminal 2 - Frontend
    cd packages/frontend
    npm run dev
    ```
 
 ### Test Local Deployment
+
 ```bash
 ./scripts/test-deployment.sh
 ```
@@ -74,11 +80,13 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
 ### 1. Infrastructure Setup
 
 Run the automated setup script:
+
 ```bash
 ./scripts/setup-aws-infrastructure.sh
 ```
 
 This creates:
+
 - RDS PostgreSQL database
 - ECR repository
 - ECS cluster (optional)
@@ -89,6 +97,7 @@ This creates:
 ### 2. Amplify Configuration
 
 #### Frontend App
+
 1. Go to AWS Amplify Console
 2. Create new app → Connect GitHub repository
 3. Choose your repository and `main` branch
@@ -98,6 +107,7 @@ This creates:
    - `NODE_ENV`: production
 
 #### Backend App
+
 1. Create second Amplify app for backend
 2. Connect same repository, choose `main` branch
 3. Build settings → Use `amplify-backend.yml`
@@ -111,6 +121,7 @@ This creates:
 ### 3. GitHub Actions Setup
 
 Add these secrets to your GitHub repository:
+
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_REGION`
@@ -121,6 +132,7 @@ Add these secrets to your GitHub repository:
 ### 4. Database Migration
 
 After deployment, run migrations:
+
 ```bash
 # Connect to your deployed backend and run:
 npx prisma migrate deploy
@@ -131,6 +143,7 @@ npx prisma migrate deploy
 ### Environment Variables
 
 **Local Development (.env)**
+
 ```bash
 # Backend
 DATABASE_URL=postgresql://user:password@localhost:5432/reprecinct
@@ -143,6 +156,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
 
 **Production (.env.production)**
+
 ```bash
 # Backend
 DATABASE_URL=${DATABASE_URL}
@@ -210,6 +224,7 @@ aws amplify start-job --app-id <app-id> --branch-name main --job-type RELEASE
 ## 💰 Cost Estimation
 
 **Monthly costs (approximate):**
+
 - RDS t3.micro: $15-25
 - Amplify: $0-15 (depending on traffic)
 - Data transfer: $0-10
@@ -220,11 +235,13 @@ aws amplify start-job --app-id <app-id> --branch-name main --job-type RELEASE
 ### Common Issues
 
 1. **Build Failures**
+
    - Check environment variables in Amplify Console
    - Verify Node.js version compatibility
    - Review build logs
 
 2. **Database Connection**
+
    - Verify DATABASE_URL format
    - Check security group rules
    - Ensure RDS is in correct VPC

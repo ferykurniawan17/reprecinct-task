@@ -7,14 +7,14 @@ backend:
         - ls -la
         - pwd
         - cd packages/backend-service
-        - npm install
+        - yarn install
         - echo "Generating Prisma client..."
         - npx prisma generate
     build:
       commands:
         - echo "Building backend service..."
         - cd packages/backend-service
-        - npm run build
+        - yarn build
         - echo "Running database migrations..."
         - npx prisma migrate deploy
     postBuild:
@@ -32,6 +32,7 @@ backend:
   cache:
     paths:
       - packages/backend-service/node_modules/**/*
+      - packages/backend-service/.yarn/cache/**/*
 environment:
   variables:
     DATABASE_URL: ${DATABASE_URL}

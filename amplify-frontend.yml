@@ -4,24 +4,32 @@ frontend:
     preBuild:
       commands:
         - echo "Installing dependencies..."
-        - ls -la
+        - echo "Current directory:"
         - pwd
+        - echo "Directory contents:"
+        - ls -la
         - cd packages/frontend
-        - npm install
+        - echo "Frontend directory contents:"
+        - ls -la
+        - yarn install
     build:
       commands:
         - echo "Building frontend application..."
         - cd packages/frontend
-        - npm run build
+        - yarn build
+        - echo "Build completed. Checking output:"
+        - ls -la .next/
   artifacts:
-    baseDirectory: packages/frontend/.next
+    baseDirectory: packages/frontend/out
     files:
-      - '**/*'
+      - "**/*"
   cache:
     paths:
       - packages/frontend/node_modules/**/*
       - packages/frontend/.next/cache/**/*
+      - packages/frontend/.yarn/cache/**/*
 environment:
   variables:
     NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     NODE_ENV: production
+    _LIVE_UPDATES: '[{"name":"Amplify CLI","pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]'
