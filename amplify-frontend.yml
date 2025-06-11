@@ -1,0 +1,28 @@
+version: 1
+applications:
+  - appRoot: packages/frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - echo "Installing dependencies..."
+            - cd packages/frontend
+            - npm install
+        build:
+          commands:
+            - echo "Building frontend application..."
+            - cd packages/frontend
+            - npm run build
+      artifacts:
+        baseDirectory: packages/frontend/.next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - packages/frontend/node_modules/**/*
+          - packages/frontend/.next/cache/**/*
+    environment:
+      # Environment variables will be set in Amplify console
+      variables:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NODE_ENV: production

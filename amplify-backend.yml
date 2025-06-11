@@ -1,0 +1,37 @@
+version: 1
+applications:
+  - appRoot: packages/backend-service
+    backend:
+      phases:
+        preBuild:
+          commands:
+            - echo "Installing dependencies..."
+            - cd packages/backend-service
+            - npm install
+            - echo "Generating Prisma client..."
+            - npx prisma generate
+        build:
+          commands:
+            - echo "Building backend service..."
+            - cd packages/backend-service
+            - npm run build
+            - echo "Running database migrations..."
+            - npx prisma migrate deploy
+        postBuild:
+          commands:
+            - echo "Backend build completed"
+      artifacts:
+        baseDirectory: packages/backend-service/dist
+        files:
+          - '**/*'
+        name: backend-build
+      cache:
+        paths:
+          - packages/backend-service/node_modules/**/*
+    environment:
+      variables:
+        DATABASE_URL: ${DATABASE_URL}
+        NODE_ENV: production
+        PORT: "4000"
+        CORS_ORIGIN: ${FRONTEND_URL}
+        JWT_SECRET: ${JWT_SECRET}

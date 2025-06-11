@@ -1,0 +1,61 @@
+name: Deploy to AWS Amplify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/frontend/**'
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'packages/frontend/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd packages/frontend
+          npm ci
+
+      - name: Type check
+        run: |
+          cd packages/frontend
+          npm run type-check
+
+      - name: Lint
+        run: |
+          cd packages/frontend
+          npm run lint
+
+      - name: Build application
+        run: |
+          cd packages/frontend
+          npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to Amplify
+        run: |
+          # Trigger Amplify build
+          aws amplify start-job --app-id ${{ secrets.AMPLIFY_APP_ID_FRONTEND }} --branch-name main --job-type RELEASE

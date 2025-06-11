@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Installing dependencies
+      - cd packages/frontend
+      - npm install
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the frontend application...
+      - cd packages/frontend
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - packages/frontend/.next/**/*
+    - packages/frontend/public/**/*
+    - packages/frontend/package.json
+  name: frontend-build
