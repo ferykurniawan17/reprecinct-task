@@ -15,7 +15,6 @@ frontend:
     build:
       commands:
         - echo "Building frontend application..."
-        - cd packages/frontend
         - yarn build
         - echo "Build completed. Checking output:"
         - ls -la .next/
