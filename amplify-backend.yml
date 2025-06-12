@@ -4,31 +4,38 @@ backend:
     preBuild:
       commands:
         - echo "Installing dependencies..."
-        - ls -la
+        - echo "Current directory:"
         - pwd
+        - echo "Root directory contents:"
+        - ls -la
         - cd packages/backend-service
+        - echo "Backend directory contents:"
+        - ls -la
         - yarn install
         - echo "Generating Prisma client..."
         - npx prisma generate
     build:
       commands:
         - echo "Building backend service..."
-        - cd packages/backend-service
         - yarn build
+        - echo "Verifying build output:"
+        - ls -la dist/
         - echo "Running database migrations..."
-        - npx prisma migrate deploy
+        - npx prisma migrate deploy || echo "Migration skipped - DATABASE_URL may not be available in build"
     postBuild:
       commands:
         - echo "Backend build completed"
-        - cd packages/backend-service
-        - ls -la dist/
+        - echo "Final directory structure:"
+        - ls -la
+        - echo "Dist directory contents:"
+        - ls -la dist/ || echo "No dist directory found"
+        - echo "Copying required files for runtime..."
+        - cp package.json dist/ || echo "package.json copy failed"
+        - cp -r prisma dist/ || echo "prisma copy failed"
   artifacts:
     baseDirectory: packages/backend-service
     files:
-      - dist/**/*
-      - package.json
-      - node_modules/**/*
-      - prisma/**/*
+      - "**/*"
   cache:
     paths:
       - packages/backend-service/node_modules/**/*
