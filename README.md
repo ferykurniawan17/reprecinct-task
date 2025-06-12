@@ -7,14 +7,13 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
 - **Frontend**: Next.js deployed on AWS Amplify
 - **Backend**: Express.js + Prisma deployed on AWS Amplify
 - **Database**: PostgreSQL on AWS RDS
-- **CI/CD**: GitHub Actions + AWS CodeBuild
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- AWS CLI configured
 - Node.js 18+
+- Yarn package manager
 - GitHub account
 - PostgreSQL (for local development)
 
@@ -28,11 +27,11 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
 
    # Install backend dependencies
    cd packages/backend-service
-   npm install
+   yarn install
 
    # Install frontend dependencies
    cd ../frontend
-   npm install
+   yarn install
    ```
 
 2. **Set up local environment**
@@ -62,11 +61,11 @@ A full-stack application with Next.js frontend and Express.js backend, deployed 
    ```bash
    # Terminal 1 - Backend
    cd packages/backend-service
-   npm run dev
+   yarn dev
 
    # Terminal 2 - Frontend
    cd packages/frontend
-   npm run dev
+   yarn dev
    ```
 
 ### Test Local Deployment

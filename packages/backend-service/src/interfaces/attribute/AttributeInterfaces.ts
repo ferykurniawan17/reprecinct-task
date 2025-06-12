@@ -6,6 +6,11 @@ import {
 import { ApiRequest, ApiResponse } from "../../shared/types/api";
 import { CreateAttributeRequest, CreateAttributeResponse } from "./type";
 
+/**
+ * Handler for creating new attributes
+ * Accepts either a single string or an array of strings as attributes
+ * Returns the list of created and skipped attributes
+ */
 export const createAttributesApiHandler = async (
   req: ApiRequest<CreateAttributeRequest>,
   res: ApiResponse<CreateAttributeResponse>
@@ -31,6 +36,11 @@ export const createAttributesApiHandler = async (
   res.json(response);
 };
 
+/**
+ * Handler for filtering and retrieving attributes
+ * Supports optional limit and search query parameters
+ * Returns paginated list of attributes with total count
+ */
 export const filterAttributesApiHandler = async (
   req: Request,
   res: Response
