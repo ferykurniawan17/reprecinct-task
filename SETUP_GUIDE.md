@@ -200,7 +200,7 @@ curl -X GET "http://localhost:4000/api/attribute?search=size&limit=5"
 
 ### Frontend (AWS Amplify)
 
-- **Production URL**: _[Your Amplify URL will be here]_
+- **Production URL**: _[[https://main.d3aoq41d2fbxtq.amplifyapp.com](https://main.d3aoq41d2fbxtq.amplifyapp.com)]_
 
 ### Backend (AWS App Runner)
 
@@ -275,49 +275,6 @@ reprecinct-task/
 ├── package.json                  # Root package.json (monorepo)
 └── lerna.json                    # Lerna configuration
 ```
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-1. **Port Already in Use**
-
-   ```bash
-   # Kill process on port 4000 (backend)
-   lsof -ti:4000 | xargs kill -9
-
-   # Kill process on port 3000 (frontend)
-   lsof -ti:3000 | xargs kill -9
-   ```
-
-2. **Database Connection Issues**
-
-   - Ensure the DATABASE_URL in your `.env` file is correct
-   - Check if your IP is whitelisted for the RDS instance
-   - Verify the database is running
-
-3. **Prisma Client Issues**
-
-   ```bash
-   cd packages/backend-service
-   yarn prisma:generate
-   ```
-
-4. **Node Modules Issues**
-   ```bash
-   # Clean install
-   rm -rf node_modules packages/*/node_modules
-   yarn install
-   ```
-
-### Getting Help
-
-If you encounter any issues:
-
-1. Check the console output for error messages
-2. Verify all environment variables are set correctly
-3. Ensure all dependencies are installed
-4. Check that both services are running on the correct ports
 
 ## 📊 Tech Stack
 
